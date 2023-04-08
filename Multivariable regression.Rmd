@@ -1,0 +1,130 @@
+---
+title: "Tugas 1 Pemodelan Kausal - Tugas Regresi Multivariabel"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+
+```{r config working directory}
+setwd("#")
+```
+
+```{r load library}
+library(readxl)
+library(psych)
+library(ggpubr)
+library(car)
+library(lmtest)
+```
+
+
+```{r create dataframe}
+df = read_excel("dataset/data-pk1.xlsx")
+# Removing column 1
+df = df[,-1]
+head(df)
+```
+#### Penjelasan : 
+#### Skala data yang ada X1-X5 serta Y merupakan skala Interval
+
+```{r attached the columns into variables}
+attach(df)
+colnames(df)
+```
+# Jawaban Nomor 1
+```{r Jawaban Nomor 1}
+#Correlation Plot
+corPlot(df, cex = 1.2)
+```
+
+#### Penjelasan :
+#### Berdasarkan plot dapat diketahui bahwa variabel X1,X2,X3, dan X4 memiliki korelasi yang cukup kuat walaupun pada X4 hanya memiliki 69% saja. Sedangkan, korelasi antar variabel X1-X3 memiliki korelasi sempurna berbeda pada variabel X4-X5
+
+
+
+# Jawaban Nomor 2
+```{r Jawaban Nomor 2.1}
+# Divide the screen in 2 columns and 2 lines
+par(mar=c(4,4,.1,.1))
+
+ggscatter(df,x = "X1",y = "Y",
+          add = "reg.line",conf.int = TRUE,
+          cor.coef = TRUE, cor.method = "pearson")
+
+ggscatter(df,x = "X2",y = "Y",
+          add = "reg.line",conf.int = TRUE,
+          cor.coef = TRUE, cor.method = "pearson")
+
+ggscatter(df,x = "X3",y = "Y",
+          add = "reg.line",conf.int = TRUE,
+          cor.coef = TRUE, cor.method = "pearson")
+
+ggscatter(df,x = "X4",y = "Y",
+          add = "reg.line",conf.int = TRUE,
+          cor.coef = TRUE, cor.method = "pearson")
+
+ggscatter(df,x = "X5",y = "Y",
+          add = "reg.line",conf.int = TRUE,
+          cor.coef = TRUE, cor.method = "pearson")
+
+```
+
+```{r Jawaban Nomor 2.2}
+# Divide the screen in 2 columns and 2 lines
+a = lm(Y~X1)
+b = lm(Y~X2)
+c = lm(Y~X3)
+d = lm(Y~X4)
+e = lm(Y~X5)
+
+summary(a)
+summary(b)
+summary(c)
+summary(d)
+summary(e)
+```
+
+#### Berdasarkan pada soal nomor 2 model yang digunakan yakni model dari regresi linear sederhana dengan bentuk model yakni Y = a + bX.
+#### Sehingga didapatkan sebagai berikut :
+##### Y = 57.23 + 1.6451X1
+##### Y = 56.75 + 0.8190X2
+##### Y = 60.35 - 1.0986X3
+##### Y = 69.19 + 1.159X4
+##### Y = 139.48 - 0.4945X5
+
+
+# Jawaban Nomor 3
+```{r}
+# Multiple Regression
+model = lm(Y~X1+X2+X3+X4+X5, data=df)
+summary(model)
+
+
+
+# Multikolinearitas
+vif(model)
+
+
+
+# Heteroskedastisitas
+bptest(model)
+
+```
+
+#### Model seluruh tanpa asumsi
+##### Y = 4.950 + 0.227X1 + 0.322X2 - 0.412X3 + 1.007X4 + 0.002X5
+#### Model yang hanya signifikan tanpa asumsi
+##### Y = 4.950 + 0.322X2 - 0.412X3 + 1.007X4
+
+
+#### Model yang bebas dari multikolinearitas (nilai VIF>10)
+##### Y = 4.950 + 1.007X4 + 0.002X5
+#### Model yang bebas dari multikolinearitas dan signifikan terhadap model (nilai VIF>10)
+##### Y = 4.950 + 1.007X4
+
+##### Berdasarkan uji homoskedastisitas dengan menggunakan tingkat kepercayaan 95% didapatkan bahwa gagal tolak H0 yang mengartikan bahwa Nilai residu didistribusikan dengan varians yang sama.
+
+##### Sehingga model yang dapat diasumsikan baik adalah model yang bebas dari multikolinearitas yakni : Y = 4.950 + 1.007X4
